@@ -1,0 +1,57 @@
+from tkinter import *
+from tkinter import filedialog
+from pytube import YouTube
+import  threading
+root = Tk()
+root.title("Youtube Downloader")
+root.geometry("600x320")
+root.resizable(FALSE,FALSE)
+
+#function
+def browse():
+    directory = filedialog.askdirectory(title="save video")
+    folderlink.delete(0,"end")
+    folderlink.insert(0,directory)
+
+def down_yt():
+    status.config(text="Status: Downlowding........")
+    link = ylink.get()
+    folder = folderlink.get()
+    YouTube(link,on_complete_callback=finish).streams.filter(progressive=True,file_extension="mp4").order_by("resolution").desc().first().download(folder)
+
+def finish(stream=None,chunk=None,file_handle=None,remaining=None):
+    status.config(text="Status: Complete ")
+
+#Link
+ytLabel = Label(root,text="Link")
+ytLabel.place(x=50,y=150)
+
+ylink = Entry(root,width=60)
+ylink.place(x=140, y=150)
+
+#folder
+
+folderlabel = Label(root,text="Folder")
+folderlabel.place(x=50,y=183)
+
+folderlink = Entry(root,width=50)
+folderlink.place(x=140,y=183)
+
+#botton browse
+browse = Button(root,text="browse",command=browse)
+browse.place(x=455,y=180)
+
+#botton download
+download = Button(root,text="Download",command=threading.Thread(target=down_yt).start)
+download.place(x=280,y=220)
+
+#yotube logo
+ytlog = PhotoImage(file="logo.png").subsample(3)
+yttitle = Label(root,image=ytlog)
+yttitle.place(relx=0.5,rely=0.25,anchor="center")
+
+#status bar
+status = Label(root,text="Statut: Ready",font="Calibre 10 italic",fg="black",bg="white",anchor="w")
+status.place(rely=1,anchor="sw",relwidth=1)
+
+root.mainloop()
